@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% block import %}
+    {% endblock %}
+</head>
+<body>
+    <p><b><i>hello</i>Hello</b> <i>hello</i> <u>hello</u></p>
+    <h1>Big one</h1>
+    <h6>Small one</h6>
+    <span>Text</span>
+    <a href="https://youtube.com">YouTube</a>
+    <ul>
+        <li><a>1</a></li>
+        <li><a>1</a></li>
+        <li><a>1</a></li>
+    </ul>
+    <img src="https://media.cntraveller.com/photos/611bf0b8f6bd8f17556db5e4/master/pass/gettyimages-1146431497.jpg" height="200">
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="text">
+        <select name="color">
+            <option>red</option>
+            <option>black</option>
+            <option>green</option>
+        </select>
+        <button>Click Me</button>
+    </form>
+    <div>
+
+    </div>
+    <header>
+
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+
+    </footer>
+</body>
+</html>
