@@ -1,0 +1,7 @@
+-- SELECT firstName, lastName, email, birthDate, Grands, groupName
+-- FROM students
+-- INNER JOIN student_groups ON student_groups.id = students.groupId
+-- WHERE Grands = (SELECT MAX(Grands) FROM students)
+-- SELECT firstName, birthDate
+-- FROM students
+-- WHERE DAY(birthDate) = 03;

@@ -1,0 +1,17 @@
+-- SELECT COUNT(DISTINCT birthDate) AS "Rows" FROM students;
+-- SELECT AVG(Grands) AS "Rows" FROM students;
+-- SELECT MIN(Grands) AS "Rows" FROM students;
+-- SELECT MAX(Grands) AS "Rows" FROM students;
+-- SELECT * FROM students
+-- WHERE firstName LIKE 'J%' AND Grands > 1300;
+-- SELECT * FROM students
+-- WHERE firstName IN ('Ann', 'Jack', 'John');
+-- SELECT COUNT(groupId) AS "Students amount", groupName
+-- FROM students
+-- INNER JOIN student_groups ON students.groupId = student_groups.id
+-- GROUP BY groupId;
+-- SELECT firstName, Grands
+-- FROM students
+-- GROUP BY firstName, Grands
+-- HAVING AVG(Grands) < 1300
+-- ORDER BY firstName;
