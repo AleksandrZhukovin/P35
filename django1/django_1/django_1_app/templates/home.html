@@ -7,11 +7,9 @@
 {% block content %}
     <h1>Hello</h1>
     <h6>hi</h6>
-    {% if var == 'Bob' %}
-        <p>{{ var }}</p>
-    {% else %}
-        <p>None</p>
-    {% endif %}
+    {% for i in var %}
+        <p>{{ i.name }}</p>
+    {% endfor %}
     {% for i in l %}
         <p>{{ i }}</p>
     {% endfor %}
