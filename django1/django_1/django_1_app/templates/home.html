@@ -5,12 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Hello</h1>
-    <h6>hi</h6>
-    {% for i in var %}
-        <p>{{ i.name }}</p>
-    {% endfor %}
-    {% for i in l %}
-        <p>{{ i }}</p>
-    {% endfor %}
+    {% if user.is_authenticated %}
+        <h1>{{ user.username }}</h1>
+    {%endif %}
 {% endblock %}

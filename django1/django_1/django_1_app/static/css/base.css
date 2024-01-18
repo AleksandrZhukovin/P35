@@ -1,0 +1,15 @@
+.style1 {
+    color: red;
+
+}
+
+#test {
+    color: blue;
+    background-color: yellow;
+    width: 50%;
+    height: 1.2em;
+}
+
+h2 {
+    color: green;
+}

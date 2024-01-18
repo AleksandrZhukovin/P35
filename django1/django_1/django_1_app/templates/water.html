@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Username: </label>
+        <input name="name" id="name" type="text" required><br>
+        <label for="surname">Surname: </label>
+        <input name="surname" id="surname" type="text" required><br>
+        <label for="email">Email: </label>
+        <input name="email" id="email" type="email" required><br>
+        <label for="phone">Phone: </label>
+        <input name="phone" id="phone" type="number" required><br>
+        <label for="address">Address: </label>
+        <input name="address" id="address" type="text" required><br>
+        <label for="month">Month amount: </label>
+        <input name="month" id="month" type="number" required><br>
+        <label for="volume">Volume: </label>
+        <select id="volume" name="volume">
+            <option value="five">5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+        </select><br>
+        <input type="submit" value="Enter">
+    </form>
+    <h1>{{ name.0 }}</h1>
+    <h1>{{ surname.0 }}</h1>
+    <h1>{{ volume.0 }}</h1>
+
+    <form>
+        {% for f in form %}
+            <h1 class="style1">{{f.label_tag}}</h1>
+            {{ f }}
+        {% endfor %}
+    </form>
+
+
+    <h2 class="style1" id="test">h2</h2>
+    <h2>h2</h2>
+{% endblock %}
