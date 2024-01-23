@@ -1,83 +1,202 @@
-from django.shortcuts import render, redirect
-from .models import Product, User
+# from django.shortcuts import render, redirect
+from .models import Product, User, Film, Director
 from pathlib import Path
 from django.core.files import File
-from .forms import WaterForm, Registration, Login, ComplainForm
+from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd
 from django.contrib.auth import authenticate, login, logout
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth.views import LoginView, LogoutView
 
 
-def home(request):
-    user = User.objects.get(id=1)
-    path = Path('static/images/R.jpg')
-    with path.open(mode='rb') as img:
-        file = File(img, name=img.name)
-    product = Product(name='Apple', user=user, file=file)
-    product.save()
-    product = Product(name='banana', user=user, file=file)
-    product.save()
-    product = Product(name='orange', user=user, file=file)
-    product.save()
-    product = Product(name='tomato', user=user, file=file)
-    product.save()
-    # product.many_user.add(user)
-    # product.save()
-    # product.many_user.add(user)
-    # product.save()
-    # product.many_user.remove(user)
-    # product.save()
-    # print(product.many_user.all())
-    if request.method == 'POST':
-        data = request.POST
-        print(data['text'])
-        name = 'Bob'
-        return redirect('/page2')
-    elif request.method == 'GET':
-        # data = Product.objects.all()  # QuerySet
-        data = Product.objects.filter(id=1)   # QuerySet
-        data[0].name = 'water'
-        data[0].save()
-        data[0].user.username # user object
-        data[0].file  # file object
-        return render(request, 'home.html', {'var': data, 'l': [1, 2, 3, 4]})
+# def home(request):
+#     user = User.objects.get(id=1)
+#     path = Path('static/images/R.jpg')
+#     with path.open(mode='rb') as img:
+#         file = File(img, name=img.name)
+#     product = Product(name='Apple', user=user, file=file)
+#     product.save()
+#     product = Product(name='banana', user=user, file=file)
+#     product.save()
+#     product = Product(name='orange', user=user, file=file)
+#     product.save()
+#     product = Product(name='tomato', user=user, file=file)
+#     product.save()
+#     # product.many_user.add(user)
+#     # product.save()
+#     # product.many_user.add(user)
+#     # product.save()
+#     # product.many_user.remove(user)
+#     # product.save()
+#     # print(product.many_user.all())
+#     if request.method == 'POST':
+#         data = request.POST
+#         print(data['text'])
+#         name = 'Bob'
+#         return redirect('/page2')
+#     elif request.method == 'GET':
+#         # data = Product.objects.all()  # QuerySet
+#         data = Product.objects.filter(id=1)   # QuerySet
+#         data[0].name = 'water'
+#         data[0].save()
+#         data[0].user.username # user object
+#         data[0].file  # file object
+#         return render(request, 'home.html', {'var': data, 'l': [1, 2, 3, 4]})
 
 
-def main(request):
-    return render(request, 'home.html', {'user': request.user})
+# def main(request):
+#     products = Product.objects.all()
+#     return render(request, 'home.html', {'user': request.user, 'products': products})
 
 
-def registration(request):
-    if request.method == 'POST':
-        form = Registration(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(username=form.cleaned_data['username'],
-                                            password=form.cleaned_data['password'], email=form.cleaned_data['email'])
-            user.save()
-            return redirect('/')
-    else:
-        return render(request, 'registration.html', {'form': Registration()})
+class HomePage(ListView):
+    template_name = 'home.html'
+    model = Product
+    context_object_name = 'products'
 
 
-def water(request):
-    if request.method == 'POST':
-        data = request.POST
-        return render(request, 'water.html', data)
-    else:
-        form = ComplainForm()
-        return render(request, 'water.html', {'form': form})
+# def registration(request):
+#     if request.method == 'POST':
+#         form = Registration(request.POST)
+#         if form.is_valid():
+#             user = User.objects.create_user(username=form.cleaned_data['username'],
+#                                             password=form.cleaned_data['password'], email=form.cleaned_data['email'])
+#             user.save()
+#             login(request, user)
+#             return redirect('/')
+#     else:
+#         return render(request, 'registration.html', {'form': Registration(), 'user': request.user})
 
 
-def login_page(request):
-    if request.method == 'POST':
-        form = Login(request.POST)
-        if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-            if user:
-                login(request, user)
-                return redirect('/')
-    else:
-        return render(request, 'registration.html', {'form': Login()})
+class RegistrationPage(CreateView):
+    template_name = 'registration.html'
+    form_class = Registration
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+    def get_success_url(self):
+        login(self.request, self.object)
+        return '/'
 
 
-def logout_page(request):
-    logout(request)
-    return redirect('/')
+class ProductCreate(CreateView):
+    template_name = 'product_create.html'
+    form_class = ProductForm
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get(self):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+# def product_create(request):
+#     if request.method == 'POST':
+#         form = ProductForm(request.POST)
+#         if form.is_valid():
+#             product = Product(name=form.cleaned_data['name'], user=User.objects.get(id=1))
+#             product.save()
+#             return redirect('/')
+#     else:
+#         return render(request, 'product_create.html', {'form': ProductForm(), 'user': request.user})
+
+
+class ProductEdit(UpdateView):
+    template_name = 'product_create.html'
+    form_class = ProductForm
+    success_url = reverse_lazy('home')
+
+
+# def product_edit(request, **kwargs):
+#     if request.method == 'POST':
+#         form = ProductForm(request.POST)
+#         if form.is_valid():
+#             product = Product.objects.get(id=kwargs['pk'])
+#             product.name = form.cleaned_data['name']
+#             product.save()
+#             return redirect('/')
+#     else:
+#         return render(request, 'registration.html', {'form': ProductForm(), 'user': request.user})
+
+
+class DeleteProduct(DeleteView):
+    template_name = 'delete.html'
+    model = Product
+    success_url = reverse_lazy('home')
+
+
+# def login_page(request):
+#     if request.method == 'POST':
+#         form = Login(request.POST)
+#         if form.is_valid():
+#             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+#             if user:
+#                 login(request, user)
+#                 return redirect('/')
+#     else:
+#         return render(request, 'registration.html', {'form': Login()})
+
+
+class LoginPage(LoginView):
+    template_name = 'registration.html'
+    form_class = Login
+    redirect_authenticated_user = True
+
+
+class LogoutPage(LogoutView):
+    pass
+
+
+# def logout_page(request):
+#     logout(request)
+#     return redirect('/')
+
+
+# def water(request):
+#     if request.method == 'POST':
+#         data = request.POST
+#         return render(request, 'water.html', data)
+#     else:
+#         form = ComplainForm()
+#         return render(request, 'water.html', {'form': form})
+
+
+class FilmCreate(CreateView):
+    template_name = 'registration.html'
+    form_class = FilmAdd
+    success_url = reverse_lazy('home')
+
+
+class DirectorCreate(CreateView):
+    template_name = 'registration.html'
+    form_class = DirectorAdd
+    success_url = reverse_lazy('home')
+
+
+class FilmChange(UpdateView):
+    template_name = 'registration.html'
+    model = Film
+    fields = ['title', 'plot', 'create_date', 'post']
+    success_url = reverse_lazy('home')
+
+
+class DirectorChange(UpdateView):
+    template_name = 'registration.html'
+    model = Director
+    fields = ['name', 'surname']
+    success_url = reverse_lazy('home')
+
+
+class FilmsCatalog(ListView):
+    template_name = 'films.html'
+    model = Film
+    context_object_name = 'films'

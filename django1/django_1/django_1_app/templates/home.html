@@ -8,4 +8,7 @@
     {% if user.is_authenticated %}
         <h1>{{ user.username }}</h1>
     {%endif %}
+    {% for p in products %}
+        <a href="/edit_product/{{ p.id }}">{{ p.name }}</a><a href="/delete/{{ p.id }}">Delete</a><br>
+    {% endfor %}
 {% endblock %}

@@ -1,15 +1,69 @@
-.style1 {
-    color: red;
-
+header {
+    height: 100px;
+    width: 100%;
+    background-color: #707070;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    position: fixed;
 }
 
-#test {
-    color: blue;
-    background-color: yellow;
-    width: 50%;
-    height: 1.2em;
+header div img{
+    height: 100%;
+    position: absolute;
+    left: 50%;
 }
 
-h2 {
-    color: green;
+header div{
+    height: 90%;
+    position: absolute;
+    width: 10%;
+    left: 45%;
 }
+
+header a{
+    text-decoration: none;
+    font-size: 20px;
+    background-color: #505050;
+    border: 2px solid red;
+    border-radius: 10px;
+    padding: 5px 10px 15px 20px;
+    margin: 20px;
+}
+
+header a:hover {
+    background-color: #202020;
+    transform: rotate(90deg);
+}
+
+body {
+    padding: 0px;
+    margin: 0px;
+}
+
+.reg_field {
+    padding: 5px;
+    border-radius: 7px;
+    margin: 10px;
+}
+
+
+.img_anim {
+    width: 300px;
+    animation: blink 5s linear;
+    animation-delay: 3s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+         opacity: 0;
+    }
+    100% {
+          opacity: 1;
+    }
+}
+

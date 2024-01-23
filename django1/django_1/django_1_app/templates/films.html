@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for f in films %}
+        <h3 style="width: 50%;">{{ i.title }}</h3><a href="/film_change/{{ f.id }}">Change</a> <a href="/delete_film/{{ f.id }}">Delete</a>
+        <img src="{{ f.poster.url }}" height="300">
+    {% endfor %}
+
+{% endblock %}
