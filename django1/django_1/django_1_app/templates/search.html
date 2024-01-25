@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block import %}
+
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <input type="text" name="text">
+    <input type="submit" value="Search">
+</form>
+
+{% if res %}
+    {% for i in res %}
+        <a href="/phone/{{ i.id }}">{{ i.name }}</a>
+    {% endfor %}
+{% else %}
+    <p>Type smth to search</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>{{ phone.name }} {{phone.surname }}</h2>
+    <p>{{ phone.phone }}</p>
+    <a href="/delete_phone/{{ phone.id }}">Delete</a>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Enter</button>
+    </form>
+{% endblock %}

@@ -1,14 +1,70 @@
-# from django.shortcuts import render, redirect
-from .models import Product, User, Film, Director
+from django.shortcuts import render, redirect
+from .models import Product, User, Film, Director, Phones
 from pathlib import Path
 from django.core.files import File
-from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd
+from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd, PhonesForm, PhonesFormEdit
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 
+
+def create_phone(request):
+    if request.method == 'POST':
+        form = PhonesForm(request.POST)
+        if form.is_valid():
+            phone = Phones(name=form.cleaned_data['name'], email=form.cleaned_data['email'],
+                           surname=form.cleaned_data['surname'], phone=form.cleaned_data['phone'],
+                           comment=form.cleaned_data['comment'])
+            phone.save()
+            return redirect('/')
+    else:
+        return render(request, 'phone_create.html', {'form': PhonesForm()})
+
+
+def phones_page(request):
+    phones = Phones.objects.all()
+    return render(request, 'phones.html', {'phones': phones})
+
+
+def phone_page(request, **kwargs):
+    phone = Phones.objects.get(id=kwargs['id'])
+    if request.method == 'POST':
+        form = PhonesFormEdit(request.POST)
+        if form.is_valid():
+            phone.name = form.cleaned_data['name']
+            phone.surname = form.cleaned_data['surname']
+            phone.email = form.cleaned_data['email']
+            phone.phone = form.cleaned_data['phone']
+            phone.comment = form.cleaned_data['comment']
+            phone.save()
+            return redirect(f'/phone/{phone.id}')
+    else:
+        form = PhonesFormEdit(initial={'user': phone.name, 'surname': phone.surname,
+                                       'phone': phone.phone, 'email': phone.email,
+                                       'comment': phone.comment})
+        return render(request, 'phone.html', {'phone': phone, 'form': form})
+
+
+def search(request):
+    if request.method == 'POST':
+        search_text = request.POST['text']
+        res = Phones.objects.filter(name__contains=search_text)
+        return render(request, 'search.html', {'res': res})
+    else:
+        return render(request, 'search.html')
+
+
+def main(request):
+    products = Product.objects.all()
+    return render(request, 'home.html', {'user': request.user, 'products': products})
+
+
+def delete_phone(request, **kwargs):
+    phone = Phones.objects.get(id=kwargs['id'])
+    phone.delete()
+    return redirect('/')
 
 # def home(request):
 #     user = User.objects.get(id=1)
@@ -45,10 +101,6 @@ from django.contrib.auth.views import LoginView, LogoutView
 #         return render(request, 'home.html', {'var': data, 'l': [1, 2, 3, 4]})
 
 
-# def main(request):
-#     products = Product.objects.all()
-#     return render(request, 'home.html', {'user': request.user, 'products': products})
-
 
 class HomePage(ListView):
     template_name = 'home.html'
@@ -56,17 +108,17 @@ class HomePage(ListView):
     context_object_name = 'products'
 
 
-# def registration(request):
-#     if request.method == 'POST':
-#         form = Registration(request.POST)
-#         if form.is_valid():
-#             user = User.objects.create_user(username=form.cleaned_data['username'],
-#                                             password=form.cleaned_data['password'], email=form.cleaned_data['email'])
-#             user.save()
-#             login(request, user)
-#             return redirect('/')
-#     else:
-#         return render(request, 'registration.html', {'form': Registration(), 'user': request.user})
+def registration(request):
+    if request.method == 'POST':
+        form = Registration(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(username=form.cleaned_data['username'],
+                                            password=form.cleaned_data['password'], email=form.cleaned_data['email'])
+            user.save()
+            login(request, user)
+            return redirect('/')
+    else:
+        return render(request, 'registration.html', {'form': Registration(), 'user': request.user})
 
 
 class RegistrationPage(CreateView):
@@ -99,15 +151,15 @@ class ProductCreate(CreateView):
         pass
 
 
-# def product_create(request):
-#     if request.method == 'POST':
-#         form = ProductForm(request.POST)
-#         if form.is_valid():
-#             product = Product(name=form.cleaned_data['name'], user=User.objects.get(id=1))
-#             product.save()
-#             return redirect('/')
-#     else:
-#         return render(request, 'product_create.html', {'form': ProductForm(), 'user': request.user})
+def product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = Product(name=form.cleaned_data['name'], user=User.objects.get(id=1))
+            product.save()
+            return redirect('/')
+    else:
+        return render(request, 'product_create.html', {'form': ProductForm(), 'user': request.user})
 
 
 class ProductEdit(UpdateView):

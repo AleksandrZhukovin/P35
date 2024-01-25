@@ -1,6 +1,24 @@
 from django import forms
-from .models import User, Product, Director, Film
+from .models import User, Product, Director, Film, Phones
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
+
+class PhonesForm(forms.ModelForm):
+    class Meta:
+        model = Phones
+        fields = ['name', 'email', 'surname', 'phone', 'comment']
+
+
+class PhonesFormEdit(forms.ModelForm):
+    class Meta:
+        model = Phones
+        fields = ['name', 'email', 'surname', 'phone', 'comment']
+        widgets = {'name': forms.TextInput(attrs={'required': False}),
+                   'email': forms.EmailInput(attrs={'required': False}),
+                   'surname': forms.TextInput(attrs={'required': False}),
+                   'phone': forms.TextInput(attrs={'required': False}),
+                   'comment': forms.TextInput(attrs={'required': False})}
+
 
 
 # class WaterForm(forms.Form):

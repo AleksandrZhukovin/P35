@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for p in phones %}
+        <a href="/phone/{{ p.id }}">{{ p.phone }}</a><br>
+    {% endfor %}
+
+{% endblock %}
