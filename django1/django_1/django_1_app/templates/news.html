@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="/news/created_at">Date</a>
+<a href="/news/title">Date</a>
+
+    {% for n in news %}
+      <h2>{{ n.title }}</h2>
+    {% endfor %}
+{% endblock %}

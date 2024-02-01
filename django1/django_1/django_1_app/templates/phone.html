@@ -1,13 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <h2>{{ phone.name }} {{phone.surname }}</h2>
-    <p>{{ phone.phone }}</p>
-    <a href="/delete_phone/{{ phone.id }}">Delete</a>
-    <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Enter</button>
-    </form>
+    <div id="main">
+        <div class="create_form">
+            <h1>Phone Create</h1>
+            <form method="post">
+                {% csrf_token %}
+                {% for f in form %}
+                    {{ f }}
+                {% endfor %}
+                <button type="submit">Enter</button>
+            </form>
+        </div>
+        <div class="additional">
+            <h2>{{ phone.name }} {{ phone.surname }}</h2>
+            <p>{{ phone.phone }}</p>
+            <a href="/delete_phone/{{ phone.id }}">Delete</a>
+        </div>
+    </div>
 {% endblock %}

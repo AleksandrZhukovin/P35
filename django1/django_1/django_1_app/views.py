@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from .models import Product, User, Film, Director, Phones
+from .models import Product, User, Film, Director, Phones, News
 from pathlib import Path
 from django.core.files import File
-from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd, PhonesForm, PhonesFormEdit
+from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd, PhonesForm, PhonesFormEdit, NewsAdd
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 
@@ -20,12 +21,67 @@ def create_phone(request):
             phone.save()
             return redirect('/')
     else:
-        return render(request, 'phone_create.html', {'form': PhonesForm()})
+        return render(request, 'phone_create.html', {'form': PhonesForm(), 'title': 'Phone Add'})
+
+
+class PhoneCreate(CreateView):
+    template_name = 'phone_create.html'
+    # model = Phones
+    form_class = PhonesForm
+    # fields = ['name', 'email', 'surname', 'phone', 'comment']
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Phone Add'
+        return context
 
 
 def phones_page(request):
     phones = Phones.objects.all()
     return render(request, 'phones.html', {'phones': phones})
+
+
+class PhonesPage(ListView):
+    template_name = 'phones.html'
+    model = Phones
+    context_object_name = 'phones'
+
+
+class NewsPage(TemplateView):
+    template_name = 'phones.html'
+
+    def get(self, request, *args, **kwargs):
+        order = self.kwargs['sort']
+        news = News.objects.all().order_by(order)
+        return render(request, 'phones.html', {'news': news})
+
+
+class OneNewsPage(TemplateView):
+    template_name = 'phones.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        news = News.objects.get(id=self.kwargs['id'])
+        context['date'] = news.created_at.strftime('%Y-%m-%d')
+        context['news'] = news
+        return context
+
+
+class NewsCreate(CreateView):
+    template_name = ''
+    form_class = NewsAdd
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class HomePage(ListView):
+    template_name = 'home.html'
+    model = Product
+    context_object_name = 'products'
 
 
 def phone_page(request, **kwargs):
@@ -45,6 +101,31 @@ def phone_page(request, **kwargs):
                                        'phone': phone.phone, 'email': phone.email,
                                        'comment': phone.comment})
         return render(request, 'phone.html', {'phone': phone, 'form': form})
+
+
+class PhonePage(UpdateView):
+    template_name = 'phone.html'
+    form_class = PhonesForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['phone'] = Phones.objects.get(id=self.kwargs['pk'])
+        return context
+
+    def get_success_url(self):
+        return f'/phone/{self.kwargs["pk"]}'
+
+
+class Search(TemplateView):
+    template_name = 'search.html'
+
+    def get_context_data(self, **kwargs):
+        pass
+
+    def post(self, request):
+        search_text = request.POST['text']
+        res = Phones.objects.filter(name__contains=search_text)
+        return render(request, 'search.html', {'res': res})
 
 
 def search(request):
@@ -101,13 +182,6 @@ def delete_phone(request, **kwargs):
 #         return render(request, 'home.html', {'var': data, 'l': [1, 2, 3, 4]})
 
 
-
-class HomePage(ListView):
-    template_name = 'home.html'
-    model = Product
-    context_object_name = 'products'
-
-
 def registration(request):
     if request.method == 'POST':
         form = Registration(request.POST)
@@ -133,6 +207,12 @@ class RegistrationPage(CreateView):
     def get_success_url(self):
         login(self.request, self.object)
         return '/'
+
+
+class LoginPage(LoginView):
+    template_name = 'registration.html'
+    form_class = Login
+    redirect_authenticated_user = True
 
 
 class ProductCreate(CreateView):

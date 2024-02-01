@@ -1,5 +1,6 @@
 from django.db import models
 from .directors import Director
+# from django.contrib.auth.models import User
 
 
 class Film(models.Model):

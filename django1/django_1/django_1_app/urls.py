@@ -14,8 +14,10 @@ urlpatterns = [
     path('director_create/', views.DirectorCreate.as_view()),
     path('film_change/<int:pk>/', views.FilmChange.as_view()),
     path('director_change/<int:pk>/', views.DirectorChange.as_view()),
-    path('phone_create/', views.create_phone, name='phone_create'),
+    path('phone_create/', views.PhoneCreate.as_view(), name='phone_create'),
     path('phones/', views.phones_page, name='phones_page'),
-    path('phone/<int:id>/', views.phone_page),
-    path('delete_phone/<int:id>/', views.delete_phone)
+    path('phone/<int:pk>/', views.PhonePage.as_view(), name='phone'),
+    path('delete_phone/<int:id>/', views.delete_phone),
+    path('news/<sort>/', ),
+    path('news/', )
 ]

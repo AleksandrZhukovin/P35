@@ -1,9 +1,23 @@
 {% extends 'base.html' %}
 
+{% block import %}
+    <link href="phone_create.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Enter</button>
-    </form>
+    <div id="main">
+        <div class="create_form">
+            <h1>Phone Create</h1>
+            <form method="post">
+                {% csrf_token %}
+                {% for f in form %}
+                    {{ f }}
+                {% endfor %}
+                <button type="submit">Enter</button>
+            </form>
+        </div>
+        <div class="additional">
+
+        </div>
+    </div>
 {% endblock %}

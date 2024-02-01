@@ -1,0 +1,33 @@
+#main {
+    width: 100%;
+    display: flex;
+}
+
+.create_form {
+    width: 50%;
+    align-text: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.additional {
+    width: 50%;
+    align-text: center;
+    background-color: red;
+}
+
+.form_field {
+    padding: 5px;
+    width: 80%;
+    background-color: #505050;
+}
+
+button {
+    width: 25%;
+    border-radius: 25%;
+    border: 0px;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+}

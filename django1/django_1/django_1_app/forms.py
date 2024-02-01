@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Product, Director, Film, Phones
+from .models import User, Product, Director, Film, Phones, News
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
@@ -7,6 +7,11 @@ class PhonesForm(forms.ModelForm):
     class Meta:
         model = Phones
         fields = ['name', 'email', 'surname', 'phone', 'comment']
+        widgets = {'name': forms.TextInput(attrs={'class': 'form_field', 'placeholder': 'Name'}),
+                   'email': forms.EmailInput(attrs={'class': 'form_field', 'placeholder': 'Email'}),
+                   'surname': forms.TextInput(attrs={'class': 'form_field'}),
+                   'phone': forms.TextInput(attrs={'class': 'form_field'}),
+                   'comment': forms.TextInput(attrs={'class': 'form_field'})}
 
 
 class PhonesFormEdit(forms.ModelForm):
@@ -52,6 +57,11 @@ class Login(AuthenticationForm):
         model = User
         fields = ['username', 'password']
 
+
+class NewsAdd(forms.ModelForm):
+    class Meta:
+        model = News
+        fields = ['title', 'text']
 
 class ComplainForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'id': 'name_id', 'class': 'style1'}))
