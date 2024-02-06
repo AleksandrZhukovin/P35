@@ -2,11 +2,43 @@
 <html lang="en">
 <head>
     <title>Document</title>
+    <style>
+        img {
+            animation: slide 10s linear;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes slide {
+            0% {
+                opacity: 0;
+            }
+            45% {
+                opacity: 1;
+            }
+            55% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- <script>
         alert()
     </script> -->
     <script src="script.js"></script>
+
+    <h3 class="class1 class2" id="num1">Num1: </h3>
+    <h3 id="num2">Num2: </h3>
+    <h3 id="oper">Operation: </h3>
+    <h3 id="res" ></h3>
+
+    <div>
+
+    </div>
+    <img src="" id="pic">
+    <button onclick="changeColor();">Change color</button>
 </body>
 </html>

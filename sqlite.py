@@ -40,3 +40,12 @@ class DB:
         self.connection.commit()
         self.connection.close()
 
+
+
+def f(a):
+    a()
+
+
+@f
+def func():
+    pass

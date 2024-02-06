@@ -5,6 +5,9 @@
 <a href="/news/title">Date</a>
 
     {% for n in news %}
-      <h2>{{ n.title }}</h2>
+        <h2>{{ n.title }}</h2>
+        <a href="/like/{{ n.id }}">Like</a>
     {% endfor %}
 {% endblock %}
+
+AJAX async javascript and xml

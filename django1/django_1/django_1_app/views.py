@@ -9,6 +9,22 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
+from .models import News, Like
+from django.http import JsonResponse
+
+
+class LikeNews(TemplateView):
+    def get(self, request, *args, **kwargs):
+        news = News.objects.get(id=self.kwargs['id'])
+        likes = Like.objects.filter(news=news)
+        for i in likes:
+            if i.user == self.request.user:
+                i.delete()
+                break
+        else:
+            l = Like(news=news, user=self.request.user)
+            l.save()
+        return redirect('/news')
 
 
 def create_phone(request):
@@ -332,3 +348,12 @@ class FilmsCatalog(ListView):
     template_name = 'films.html'
     model = Film
     context_object_name = 'films'
+
+
+class AjaxPage(TemplateView):
+    template_name = 'ajax.html'
+
+    def post(self, request):
+        data = request.POST
+        print(data['text'])
+        return JsonResponse({'status': 'OK'}, safe=False)
