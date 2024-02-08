@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Product, User, Film, Director, Phones, News
 from pathlib import Path
+from django.template.loader import render_to_string
 from django.core.files import File
 from .forms import ProductForm, Registration, Login, FilmAdd, DirectorAdd, PhonesForm, PhonesFormEdit, NewsAdd
 from django.contrib.auth import authenticate, login, logout
@@ -9,7 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
-from .models import News, Like
+from .models import News, Like, CommentNews
 from django.http import JsonResponse
 
 
@@ -74,14 +75,23 @@ class NewsPage(TemplateView):
 
 
 class OneNewsPage(TemplateView):
-    template_name = 'phones.html'
+    template_name = 'one_news.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         news = News.objects.get(id=self.kwargs['id'])
         context['date'] = news.created_at.strftime('%Y-%m-%d')
         context['news'] = news
+        context['comments'] = CommentNews.objects.filter(news=news)
         return context
+
+    def post(self, request, **kwargs):
+        data = request.POST
+        news = News.objects.get(id=self.kwargs['id'])
+        comment = CommentNews(text=data['text'], user=self.request.user, news=news)
+        comment.save()
+        html = render_to_string('comment_template.html', {'comment': comment})
+        return JsonResponse(html, safe=False)
 
 
 class NewsCreate(CreateView):

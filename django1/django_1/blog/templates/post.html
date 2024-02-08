@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="/static/js/like.js"></script>
+</head>
+<body>
+    {% csrf_token %}
+    <h3>{{ post.user.username }}</h3>
+    <h3>{{ post.text }}</h3>
+    <img src="{{ post.image.url }}">
+    <p>Likes: <b id="likes">{{ likes_amount }}</b></p>
+    {% if is_liked %}
+        <button data-url="/post/{{ post.id }}/" id="btn">Dislike</button>
+    {% else %}
+        <button data-url="/post/{{ post.id }}/" id="btn">Like</button>
+    {% endif %}
+</body>
+</html>

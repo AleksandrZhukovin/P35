@@ -1,7 +1,7 @@
 
 
 $(function(){
-    $('#btn').click(function(){
+    $('#btn').click(function(){  // document.getElementById('btn')
         $.ajax('/ajax/', {
             'type': 'POST',
             'async': true,
@@ -18,7 +18,7 @@ $(function(){
     })
 })
 
-$(document).redy(function(){  // window.onload
+$(document).ready(function(){  // window.onload
 
 })
 
