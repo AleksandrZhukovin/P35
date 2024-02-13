@@ -11,5 +11,11 @@ class Post(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+
+class Comment(models.Model):
+    text = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
 # python manage.py makemigrations
 # python manage.py migrate

@@ -5,13 +5,20 @@
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="/static/js/create_post.js"></script>
+    <script src="/static/js/posts.js"></script>
 </head>
 <body>
     <button id="open">Create Post</button>
     <div id="posts">
         {% for p in posts %}
-            <a href="/post/{{ p.id }}"><img src="{{ p.image.url }}"></a>
-            <p>{{ p.text }}</p>
+            <a href="/post/{{ p.0.id }}"><img src="{{ p.0.image.url }}"></a>
+            <p>{{ p.0.text }}</p>
+            {% if p.2 %}
+                <button class="like_button" id="{{ p.0.id }}">Dislike</button>
+            {% else %}
+                <button class="like_button" id="{{ p.0.id }}">Like</button>
+            {% endfor %}
+            <p id="likes{{ p.0.id }}">{{ p.1 }}</p>
         {% endfor %}
     </div>
     <dialog id="dialog">

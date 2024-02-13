@@ -11,21 +11,43 @@ class PostsPage(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['posts'] = Post.objects.all()
+        post = Post.objects.all()
+        posts = []
+        for i in post:
+            likes = Like.objects.filter(post=i)
+            for l in likes:
+                if l.user == self.request.user:
+                    posts.append([i, len(likes), 1])
+                    break
+            else:
+                posts.append([i, len(likes), 0])
+        context['posts'] = posts
         return context
 
     def post(self, request):
         data = request.POST
-        files = request.FILES
-        with open('static/images/image.png', 'wb') as file:
-            file.write(files['file'].read())
-        path = Path('static/images/image.png')
-        with path.open('rb') as file:
-            image = File(file, name=file.name)
-            post = Post(user=self.request.user, text=data['text'], image=image)
-            post.save()
-        html = render_to_string('post_template.html', {'p': post})
-        return JsonResponse(html, safe=False)
+        if 'id' in data.keys():
+            post = Post.objects.get(id=int(data['id']))
+            likes = Like.objects.filter(post=post)
+            for i in likes:
+                if i.user == self.request.user:
+                    i.delete()
+                    return JsonResponse({'action': 'Like', 'amount': len(likes) - 1}, safe=False)
+            else:
+                like = Like(user=self.request.user, post=post)
+                like.save()
+                return JsonResponse({'action': 'Dislike', 'amount': len(likes) + 1}, safe=False)
+        else:
+            files = request.FILES
+            with open('static/images/image.png', 'wb') as file:
+                file.write(files['file'].read())
+            path = Path('static/images/image.png')
+            with path.open('rb') as file:
+                image = File(file, name=file.name)
+                post = Post(user=self.request.user, text=data['text'], image=image)
+                post.save()
+            html = render_to_string('post_template.html', {'p': post})
+            return JsonResponse(html, safe=False)
 
 
 class PostPage(TemplateView):
