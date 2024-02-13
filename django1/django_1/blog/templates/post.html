@@ -5,6 +5,7 @@
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="/static/js/like.js"></script>
+     <script src="/static/js/comment.js"></script>
 </head>
 <body>
     {% csrf_token %}
@@ -17,5 +18,12 @@
     {% else %}
         <button data-url="/post/{{ post.id }}/" id="btn">Like</button>
     {% endif %}
+    <input type="text" id="text">
+    <button id="btn_comment">Comment</button>
+    <div id="comments">
+        {% for c in comments %}
+            <p><b>{{ c.user.username }}</b>: {{ c.text }}</p>
+        {% endfor %}
+    </div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .models import Post, Like
+from .models import Post, Like, Comment
 from django.views.generic.base import TemplateView
 from pathlib import Path
 from django.core.files import File
@@ -60,6 +60,7 @@ class PostPage(TemplateView):
         context['post'] = post
         context['likes_amount'] = len(like)
         context['is_liked'] = False
+        context['comments'] = Comment.objects.filter(post=post)
         for i in like:
             if i.user == self.request.user:
                 context['is_liked'] = True
@@ -67,14 +68,20 @@ class PostPage(TemplateView):
         return context
 
     def post(self, request, **kwargs):
+        data = request.POST
         post = Post.objects.get(id=self.kwargs['id'])
-        like = Like.objects.filter(post=post)
-        for i in like:
-            if i.user == self.request.user:
-                i.delete()
-                return JsonResponse({'action': 0, 'amount': len(like) - 1}, safe=False)
+        if len(data.keys()) == 1:
+            like = Like.objects.filter(post=post)
+            for i in like:
+                if i.user == self.request.user:
+                    i.delete()
+                    return JsonResponse({'action': 0, 'amount': len(like) - 1}, safe=False)
+            else:
+                l = Like(user=self.request.user, post=post)
+                l.save()
+                return JsonResponse({'action': 1, 'amount': len(like) + 1}, safe=False)
         else:
-            l = Like(user=self.request.user, post=post)
-            l.save()
-            return JsonResponse({'action': 1, 'amount': len(like) + 1}, safe=False)
-
+            comment = Comment(text=data['text'], user=self.request.user, post=post)
+            comment.save()
+            html = render_to_string('comment_template.html', {'c': comment})
+            return JsonResponse(html, self=False)

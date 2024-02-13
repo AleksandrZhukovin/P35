@@ -6,6 +6,7 @@ class Post(models.Model):
     text = models.CharField(max_length=200)
     image = models.ImageField(upload_to='posts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Like(models.Model):
