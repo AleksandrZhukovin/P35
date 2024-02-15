@@ -1,7 +1,9 @@
 import unittest
 
+
 def square(a, b):
     return a * b
+
 
 class SquareTest(unittest.TestCase):
     def test_positiv_values(self):
