@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <p>{{ form.username.label }}</p>
+        {{ form.username(size=30) }}
+        <p>{{ form.email.label }}</p>
+        {{ form.email(size=30) }}
+        <p>{{ form.password.label }}</p>
+        {{ form.password(size=30) }}
+        <p>{{ form.repeat_password.label }}</p>
+        {{ form.repeat_password(size=30) }}
+        <p>{{ form.age.label }}</p>
+        {{ form.age(size=30) }}
+        {{ form.button() }}
+    </form>
