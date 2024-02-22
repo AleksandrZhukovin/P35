@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h1>Create Post</h1>
     <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
+        {{ form.title.label }} {{ form.title(size=30) }}
         {{ form.text.label }} {{ form.text(size=30) }}
         {{ form.image.label }} {{ form.image() }}
         {{ form.button() }}

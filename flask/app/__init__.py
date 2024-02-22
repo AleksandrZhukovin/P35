@@ -1,1 +1,3 @@
-from .views import app
+from .views import *
+from .config import *
+from .models import *

@@ -1,6 +1,7 @@
 from .config import app
 from flask import render_template, request, redirect
 from .forms import RegistrationForm, LoginForm, File, PostForm
+from .models import User, db, Post
 
 
 @app.route('/')
@@ -54,6 +55,14 @@ def registration():
     form = RegistrationForm()
     if form.validate_on_submit():
         name = form.username.data
+        password = form.password.data
+        email = form.email.data
+        age = form.age.data
+        user = User(username=name, email=email, age=age)
+        user.password_hash(password)
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
     return render_template('registration.html', form=form)
 
 
@@ -81,10 +90,19 @@ def file():
 def create_post():
     form = PostForm()
     if form.validate_on_submit():
+        title = form.title.data
         text = form.text.data
         image = form.image.data
-        image.save(f'app/static/files/{image.filename}')
-        return redirect(f'/post?path=/static/files/{image.filename}&text={text}')
+        if image.filename == '':
+            post = Post(title=title, text=text, user=1)
+            db.session.add(post)
+            db.session.commit()
+        else:
+            image.save(f'app/static/files/{image.filename}')
+            post = Post(title=title, text=text, user=1, image=f'/static/files/{image.filename}')
+            db.session.add(post)
+            db.session.commit()
+        return redirect('/')
     return render_template('create_post.html', form=form)
 
 

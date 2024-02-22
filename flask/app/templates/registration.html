@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h1>Registration</h1>
     <form method="post">
         {{ form.hidden_tag() }}
         <p>{{ form.username.label }}</p>
@@ -15,3 +16,4 @@
         {{ form.age(size=30) }}
         {{ form.button() }}
     </form>
+{% endblock %}

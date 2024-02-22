@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SubmitField, PasswordField, FileField
+from wtforms import StringField, IntegerField, BooleanField, SubmitField, PasswordField, FileField, TextAreaField
 from wtforms.validators import Email, DataRequired, EqualTo, InputRequired
 
 
@@ -25,6 +25,7 @@ class File(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    text = StringField('Text', validators=[DataRequired()])
-    image = FileField('File', validators=[InputRequired()])
+    text = TextAreaField('Text', validators=[DataRequired()])
+    title = StringField('Title', validators=[DataRequired()])
+    image = FileField('File')
     button = SubmitField('Enter')
