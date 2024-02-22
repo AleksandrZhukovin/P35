@@ -19,11 +19,6 @@ class LoginForm(FlaskForm):
     button = SubmitField('Enter')
 
 
-class File(FlaskForm):
-    file = FileField('File')
-    button = SubmitField("Enter")
-
-
 class PostForm(FlaskForm):
     text = TextAreaField('Text', validators=[DataRequired()])
     title = StringField('Title', validators=[DataRequired()])

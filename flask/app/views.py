@@ -1,7 +1,14 @@
-from .config import app
+from .config import app, login
 from flask import render_template, request, redirect
-from .forms import RegistrationForm, LoginForm, File, PostForm
+from .forms import RegistrationForm, LoginForm, PostForm
 from .models import User, db, Post
+from sqlalchemy.exc import IntegrityError
+from flask_login import current_user, login_user, logout_user
+
+
+@login.user_loader
+def user_loader(id):
+    return User.query.get(id)
 
 
 @app.route('/')
@@ -60,9 +67,13 @@ def registration():
         age = form.age.data
         user = User(username=name, email=email, age=age)
         user.password_hash(password)
-        db.session.add(user)
-        db.session.commit()
-        return redirect('/login')
+        try:
+            db.session.add(user)
+            db.session.commit()
+            return redirect('/login')
+        except IntegrityError:
+            db.session.rollback()
+            return render_template('registration.html', form=form, msg=1)
     return render_template('registration.html', form=form)
 
 
@@ -72,18 +83,18 @@ def login():
     if form.validate_on_submit():
         name = form.username.data
         password = form.password.data
-        remember_me = form.remember_me.data
-        return render_template('login.html', form=form, name=name, password=password, remember_me=remember_me)
+        user = User.qury.filter_by(username=name).first()
+        if not user or not user.check_password(password):
+            return render_template('login.html', form=form, msg=1)
+        login_user(user, remember=form.remember_me.data)
+        return redirect('/')
     return render_template('login.html', form=form)
 
 
-@app.route('/file', methods=['GET', 'POST'])
-def file():
-    form = File()
-    if form.validate_on_submit():
-        file_data = form.file.data
-        file_data.save(f'app/static/files/{file_data.filename}')
-    return render_template('file.html', form=form)
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/login')
 
 
 @app.route('/create_post', methods=['GET', 'POST'])
