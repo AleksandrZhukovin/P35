@@ -26,5 +26,18 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow())
     image = db.Column(db.String)
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    post = db.Column(db.Integer, db.ForeignKey('post.id'))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post = db.Column(db.Integer, db.ForeignKey('post.id'))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
 # flask db migrate
 # flask db upgrade

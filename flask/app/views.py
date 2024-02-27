@@ -1,9 +1,9 @@
 from .config import app, login
 from flask import render_template, request, redirect
-from .forms import RegistrationForm, LoginForm, PostForm
-from .models import User, db, Post
+from .forms import RegistrationForm, LoginForm, PostForm, CommentForm
+from .models import User, db, Post, Comment, Like
 from sqlalchemy.exc import IntegrityError
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 
 
 @login.user_loader
@@ -13,8 +13,53 @@ def user_loader(id):
 
 @app.route('/')
 def home():
-    context = {'title': 'Home', 'name': 'Bob'}
+    if request.args:
+        posts = Post.query.all().order_by(request.args.get('col'))
+    else:
+        posts = Post.query.all()
+    context = {'title': 'Home', 'user': current_user, 'posts': posts}
     return render_template('home.html', **context)
+
+
+@app.route('/posts/<int:id>', methods=['GET', 'POST'])
+def post_page(id):
+    form = CommentForm()
+    post = Post.query.get(id)
+    likes = Like.query.filter_by(post=id)
+    is_liked = False
+    for l in likes:
+        if current_user == User.query.get(l.user):
+            is_liked = True
+            break
+    if request.method == 'POST':
+        if len(request.form.keys()) == 2:
+            comment = Comment(text=form.text.data, post=id, user=current_user.id)
+            db.session.add(comment)
+            db.session.commit()
+            return {'data': f'<p>{form.text.data}</p>'}
+        else:
+            for l in likes:
+                if current_user == User.query.get(l.user):
+                    db.session.delete(l)
+                    db.session.commit()
+                    return {'liked': False, 'amount': len(likes) - 1}
+            else:
+                l = Like(user=current_user.id, post=id)
+                db.session.add(l)
+                db.session.commit()
+                return {'liked': True, 'amount': len(likes) + 1}
+    comments = Comment.query.filter_by(post=id)
+    return render_template('post_page.html', post=post, form=form, comments=comments, liked=is_liked, amount=len(likes))
+
+
+# @app.route('/create_comment<int:id>', methods=['GET', 'POST'])
+# def create_comment(id):
+#     form = CommentForm()
+#     if form.validate_on_submit():
+#         comment = Comment(text=form.text.data, post=id, user=current_user.id)
+#         db.session.add(comment)
+#         db.session.commit()
+#     return redirect(f'/posts/{id}')
 
 
 @app.route('/page')
@@ -32,23 +77,13 @@ def page():
     return render_template('page.html', s=s)
 
 
-@app.route('/form', methods=['GET', 'POST'])
+@app.route('/form/', methods=['GET', 'POST'])
 def form_page():
     if request.method == 'POST':
-        num1 = int(request.form.get('num1'))
-        num2 = int(request.form.get('num2'))
-        oper = request.form.get('operation')
-        if oper == '+':
-            s = num1 + num2
-        elif oper == '-':
-            s = num1 - num2
-        elif oper == '*':
-            s = num1 * num2
-        elif oper == '/':
-            s = num1 / num2
-        else:
-            s = 0
-        return redirect(f'/res?res={s}')
+        print(request.form)
+        # print(request.json)
+        # print(request.is_json)
+        return {'a': 100}
     return render_template('form.html', title='Home')
 
 
@@ -67,6 +102,7 @@ def registration():
         age = form.age.data
         user = User(username=name, email=email, age=age)
         user.password_hash(password)
+
         try:
             db.session.add(user)
             db.session.commit()
@@ -83,7 +119,7 @@ def login():
     if form.validate_on_submit():
         name = form.username.data
         password = form.password.data
-        user = User.qury.filter_by(username=name).first()
+        user = User.query.filter_by(username=name).first()
         if not user or not user.check_password(password):
             return render_template('login.html', form=form, msg=1)
         login_user(user, remember=form.remember_me.data)
@@ -98,6 +134,7 @@ def logout():
 
 
 @app.route('/create_post', methods=['GET', 'POST'])
+@login_required
 def create_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -110,13 +147,8 @@ def create_post():
             db.session.commit()
         else:
             image.save(f'app/static/files/{image.filename}')
-            post = Post(title=title, text=text, user=1, image=f'/static/files/{image.filename}')
+            post = Post(title=title, text=text, user=current_user.id, image=f'/static/files/{image.filename}')
             db.session.add(post)
             db.session.commit()
         return redirect('/')
     return render_template('create_post.html', form=form)
-
-
-@app.route('/post')
-def post_page():
-    return render_template('post.html', text=request.args.get('text'), path=request.args.get('path'))

@@ -2,9 +2,19 @@
 
 {% block content %}
     <script src="/static/js/numbers.js"></script>
-    <h1>Home</h1>
-    <h1>{{ title }}</h1>
-    <h1>{{ name }}</h1>
+    {% if current_user.is_authenticated %}
+        <h3>{{ user.username }}</h3>
+        <ul>
+            <li><a href="/?col=id">Id</a></li>
+            <li><a href="/?col=title">Title</a></li>
+            <li><a href="/?col=created_at">Date</a></li>
+        </ul>
+        {% for p in posts %}
+            <p>{{ p.title }} <a href="/posts/{{ p.id }}">Visit</a></p>
+        {% endfor %}
+    {% else %}
+        <h3>Login to see posts</h3>
+    {% endif %}
     <a id="data" href="/page?name=12&a=Bob&b=129">Send</a>
 
 {% endblock %}

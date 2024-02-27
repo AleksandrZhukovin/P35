@@ -24,3 +24,8 @@ class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     image = FileField('File')
     button = SubmitField('Enter')
+
+
+class CommentForm(FlaskForm):
+    text = TextAreaField('Text', validators=[DataRequired()])
+    button = SubmitField('Enter')
