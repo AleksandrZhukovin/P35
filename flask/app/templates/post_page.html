@@ -22,4 +22,10 @@
         <p>{{ c.text }}</p>
     {% endfor %}
     </div>
+    <div>
+        <input type="text" id="title" value="{{ post.title }}">
+        <textarea id="text">{{ post.text }}</textarea>
+        <input type="file" id="file" value="{{ post.image }}">
+        <input type="submit" id="change_data">
+    </div>
 {% endblock %}

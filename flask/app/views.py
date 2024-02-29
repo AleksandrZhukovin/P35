@@ -1,9 +1,10 @@
 from .config import app, login
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, session, make_response
 from .forms import RegistrationForm, LoginForm, PostForm, CommentForm
 from .models import User, db, Post, Comment, Like
 from sqlalchemy.exc import IntegrityError
 from flask_login import current_user, login_user, logout_user, login_required
+import datetime
 
 
 @login.user_loader
@@ -13,6 +14,7 @@ def user_loader(id):
 
 @app.route('/')
 def home():
+    session['user'] = current_user
     if request.args:
         posts = Post.query.all().order_by(request.args.get('col'))
     else:
@@ -21,12 +23,37 @@ def home():
     return render_template('home.html', **context)
 
 
+@app.route('/rec')
+def rec():
+    cookie = request.cookies.get('texts', '')
+    if cookie:
+        words = {}
+        cookie = cookie.split()
+        for i in set(cookie):
+            words[i] = cookie.count(i)
+        max_words = []
+        m = 0
+        for i, a in words.items():
+            if a > m:
+                m = a
+        for i, a in words.items():
+            if m == a:
+                max_words.append(i)
+        posts = Post.query.all()
+        top_posts = [i for i in posts if max_words[0] in i.text or max_words[0] in i.title]
+        return render_template('rec.html', posts=top_posts)
+
+
 @app.route('/posts/<int:id>', methods=['GET', 'POST'])
 def post_page(id):
     form = CommentForm()
     post = Post.query.get(id)
     likes = Like.query.filter_by(post=id)
     is_liked = False
+    cookie_value = request.cookies.get('texts', '')
+    cookie_value += post.text
+    resp = make_response()
+    resp.set_cookie('texts', cookie_value)
     for l in likes:
         if current_user == User.query.get(l.user):
             is_liked = True
@@ -37,7 +64,7 @@ def post_page(id):
             db.session.add(comment)
             db.session.commit()
             return {'data': f'<p>{form.text.data}</p>'}
-        else:
+        elif 'like' in form.data.keys():
             for l in likes:
                 if current_user == User.query.get(l.user):
                     db.session.delete(l)
@@ -48,6 +75,16 @@ def post_page(id):
                 db.session.add(l)
                 db.session.commit()
                 return {'liked': True, 'amount': len(likes) + 1}
+        elif request.files:
+            title = request.form['title']
+            text = request.form['text']
+            file = request.files['file']
+            file.save(f'app/static/files/{file.filename}')
+            post.title = title
+            post.text = text
+            post.image = f'/static/files/{file.filename}'
+            db.session.commit()
+            return {'status': 1, 'path': f'/static/files/{file.filename}'}
     comments = Comment.query.filter_by(post=id)
     return render_template('post_page.html', post=post, form=form, comments=comments, liked=is_liked, amount=len(likes))
 
@@ -79,12 +116,9 @@ def page():
 
 @app.route('/form/', methods=['GET', 'POST'])
 def form_page():
-    if request.method == 'POST':
-        print(request.form)
-        # print(request.json)
-        # print(request.is_json)
-        return {'a': 100}
-    return render_template('form.html', title='Home')
+    name = session.get('name', '')
+    email = session.get('email', '')
+    return render_template('form.html', title='Home', name=name, email=email)
 
 
 @app.route('/res')
@@ -123,7 +157,13 @@ def login():
         if not user or not user.check_password(password):
             return render_template('login.html', form=form, msg=1)
         login_user(user, remember=form.remember_me.data)
-        return redirect('/')
+        # session['name'] = user.username
+        # session['email'] = user.email
+        resp = make_response(redirect('/'))
+        expire_in = datetime.datetime.now() + datetime.timedelta(days=30)
+        # resp.set_cookie('username', 'Bob', expires=expire_in)
+        # request.cookies['username']
+        return resp
     return render_template('login.html', form=form)
 
 
@@ -134,15 +174,13 @@ def logout():
 
 
 @app.route('/create_post', methods=['GET', 'POST'])
-@login_required
 def create_post():
-    form = PostForm()
-    if form.validate_on_submit():
-        title = form.title.data
-        text = form.text.data
-        image = form.image.data
+    if request.method == 'POST':
+        title = request.form['title']
+        text = request.form['text']
+        image = request.files['file']
         if image.filename == '':
-            post = Post(title=title, text=text, user=1)
+            post = Post(title=title, text=text, user=current_user.id)
             db.session.add(post)
             db.session.commit()
         else:
@@ -150,5 +188,4 @@ def create_post():
             post = Post(title=title, text=text, user=current_user.id, image=f'/static/files/{image.filename}')
             db.session.add(post)
             db.session.commit()
-        return redirect('/')
-    return render_template('create_post.html', form=form)
+        return {'html': f'<p>{ title } <a href="/posts/{ post.id }">Visit</a></p>'}
