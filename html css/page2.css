@@ -1,97 +1,79 @@
-#div1 {
-    height: 200px;
-    width: 200px;
-    background-color: green;
-    position: absolute;
-    animation: m 5s linear;
-    animation-delay: 3s;
-    animation-iteration-count: infinite;
-}
-
-@keyframes m{
-    0% {
-        top: 0%;
-        left: 0%;
-        background-color: green;
-    }
-    50% {
-        top: 50%;
-        left: 30%;
-        background-color: red;
-    }
-    100% {
-        top: 0%;
-        left: 80%;
-        background-color: green;
-    }
-}
-
-img {
-    height:200px;
-}
-img:hover {
-    box-shadow: red 10px 10px 10px 10px;
-}
-
 body {
-    margin: 0px;
+    background-color: black;
 }
 
-header {
-    background-color: white;
-    position: fixed;
-    width: 100%;
-    height: 150px;
+@media (max-width: 500px){
+    .bottom-nav {
+        position: fixed;
+        width: 100%;
+        height: 10vh;
+        top: 90vh;
+        border-top: 2px solid #C0C0C0;
+    }
+
+    .nav {
+        display: hidden;
+    }
+
+    .nav a img{
+        height: 0px;
+    }
+
+    .bottom-nav img {
+        width: 5%;
+        margin: 5% 7%;
+    }
+
+    .right {
+        width: 0px;
+        border: 0px;
+    }
+
+    .center {
+        width: 80%;
+    }
 }
 
-header div {
-    width: 50%;
-    height: 100%;
-    text-align: center;
-}
+@media (min-width: 501px) and (max-width: 2000px){
+    .nav {
+        position: fixed;
+        width: 20%;
+        height: 100vh;
+        border-right: 2px solid #C0C0C0;
+    }
 
-header div a {
-    color: black;
-    font-family: -;
-    font-size: 26px;
-    text-decoration: none;
-    margin: 0% 3%;
-}
+    .nav a {
+        color: white;
+        font-weight: bold;
+        font-size: 25px;
+        padding: 10px 0px;
+        padding-right: 40%;
+        margin: 10px 0px;
+        display: inline-block;
+    }
 
-header div a:hover {
-    color: red;
-}
+    .center {
+        width: 60%;
+    }
 
-header div input {
-    width: 15%;
-    padding: 20px;
-    border: 1px solid #101010;
-}
+    .right {
+        width: 20%;
+        height: 100vh;
+        border-left: 2px solid #C0C0C0;
+        position: fixed;
+        right: 0px;
+    }
 
-main {
-    padding: 0px 10%;
-    display: flex;
-}
+    .nav a:hover {
+        background-color: #303030;
+        border-radius: 10px;
+    }
 
-main div {
-    border: 1px solid #101010;
-    width: 20%;
-    height: 40vh;
-    margin: 10px;
-}
+    .bottom-nav {
+        display: hidden;
+    }
 
-main div:hover {
-    box-shadow: 10px 10px 10px 10px;
-    transition: transform 500ms ease-in-out;
-}
-
-footer {
-    background-color: ;
-    display: flex;
-}
-
-footer div {
-    width: 15%;
-    height: 80%;
-
+    .bottom-nav img {
+        width: 0px;
+    }
 }
