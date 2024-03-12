@@ -1,7 +1,7 @@
 from .config import app, login
 from flask import render_template, request, redirect, session, make_response
 from .forms import RegistrationForm, LoginForm, PostForm, CommentForm
-from .models import User, db, Post, Comment, Like
+from .models import User, db, Post, Comment, Like, Goods
 from sqlalchemy.exc import IntegrityError
 from flask_login import current_user, login_user, logout_user, login_required
 import datetime
@@ -189,3 +189,50 @@ def create_post():
             db.session.add(post)
             db.session.commit()
         return {'html': f'<p>{ title } <a href="/posts/{ post.id }">Visit</a></p>'}
+
+
+@app.route('/goods', methods=['GET', 'POST'])
+def goods():
+    products = Goods.query.all()
+    if request.method == 'POST':
+        data = request.form
+        if 'name' in data:
+            file = request.files
+            file['image'].save('/static/images/file.png')
+            good = Goods(name=data['name'], price=float(data['price']), image='/static/images/file.png')
+            db.session.add(good)
+            db.session.commit()
+            html = f'<div id="product{good.id}"><h2>{data["name"]}</h2><h3>{data["price"]}</h3><button hx-delete="/delete_product/{ good.id }" hx-target="#goods">Delete</button><button hx-patch="/edit_product/{ good.id }" hx-target="#product{ good.id }">Edit</button></div>'
+            return html
+        elif 'editname' in data:
+            good = Goods.query.get(int(data['id']))
+            good.name = data['name']
+            good.price = data['price']
+            db.session.commit()
+            html = f'<div id="product{good.id}"><h2>{data["name"]}</h2><h3>{data["price"]}</h3><button hx-delete="/delete_product/{ good.id }" hx-target="#goods">Delete</button><button hx-patch="/edit_product/{ good.id }" hx-target="#product{ good.id }">Edit</button></div>'
+            return html
+    return render_template('goods.html', goods=products)
+
+
+@app.route('/delete_product/<int:id>', methods=['GET', 'DELETE'])
+def delete_goods(id):
+    if request.method == 'GET':
+        return redirect('/goods')
+    else:
+        product = Goods.query.get(id)
+        db.session.delete(product)
+        products = Goods.query.all()
+        html = ''
+        for p in products:
+            html += f'<div id="product{p.id}"><h2>{p.name}</h2><h3>{p.price}</h3></div><button hx-delete="/delete_product/{ p.id }" hx-target="#goods">Delete</button><button hx-patch="/edit_product/{ p.id }" hx-target="#product{ p.id }">Edit</button>'
+        return html
+
+
+@app.route('/edit_product/<int:id>', methods=['GET', 'PATCH'])
+def edit(id):
+    if request.method == 'GET':
+        return redirect('/goods')
+    else:
+        product = Goods.query.get(id)
+        html = f'<div id="product{product.id}"><h2><input name="editname" value="{product.name}"></h2><h3><input name="editprice" value="{product.price}"></h3><button hx-delete="/delete_product/{product.id}" hx-target="#goods">Delete</button><button hx-post="/edit_product/{product.id}" hx-target="#product{product.id}" hx-include="[name=\'nameedit\'], [name=\'priceedit\'], [name=\'id\']">Edit</button></div>'
+        return html

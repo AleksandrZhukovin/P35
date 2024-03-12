@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <input name="name" type="text">
+    <input name="price" type="text">
+    <input name="image" type="file">
+    <button hx-post="/goods" hx-headers="{'X-CSRFtoken': '{{ csrf_token }}'}" hx-include="[name='name'], [name='price'], [name='image']" hx-target="#goods">Enter</button>
+    <div id="goods">
+        {% for g in goods %}
+            <h1>{{ g.name }}</h1>
+            <h2>{{ g.price }}</h2>
+        {% endfor %}
+    </div>
+</body>
+</html>

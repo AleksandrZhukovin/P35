@@ -19,5 +19,6 @@ urlpatterns = [
     path('phone/<int:pk>/', views.PhonePage.as_view(), name='phone'),
     path('delete_phone/<int:id>/', views.delete_phone),
     path('news/<int:id>/', views.OneNewsPage.as_view()),
-    path('ajax/', views.AjaxPage.as_view())
+    path('ajax/', views.AjaxPage.as_view()),
+    path('htmx_page/', views.HomePage.as_view())
 ]

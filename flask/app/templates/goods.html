@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <input type="text" name="name">
+    <input type="text" name="price">
+    <input type="file" name="image">
+    <button hx-post="/goods" hx-include="[name='name'], [name='price'], [name='image']" hx-target="#goods">Enter</button>
+    <div id="goods">
+        {% for g in goods %}
+            <div id="product{{ g.id }}"></div>
+                <h2>{{ g.name }}</h2>
+                <h3>{{ g.price }}</h3>
+                <button hx-delete="/delete_product/{{ g.id }}" hx-target="#goods">Delete</button>
+                <button hx-patch="/edit_product/{{ g.id }}" hx-target="#product{{ g.id }}">Edit</button>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

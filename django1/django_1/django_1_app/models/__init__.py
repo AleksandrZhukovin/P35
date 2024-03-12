@@ -6,3 +6,4 @@ from .phones_book import Phones
 from .news import News
 from .like import Like
 from .news_comment import CommentNews
+from .goods import Goods

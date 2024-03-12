@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product, User, Film, Director, Phones, News
+from .models import Product, User, Film, Director, Phones, News, Goods
 from pathlib import Path
 from django.template.loader import render_to_string
 from django.core.files import File
@@ -11,7 +11,7 @@ from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import News, Like, CommentNews
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 
 class LikeNews(TemplateView):
@@ -367,3 +367,38 @@ class AjaxPage(TemplateView):
         data = request.POST
         print(data['text'])
         return JsonResponse({'status': 'OK'}, safe=False)
+
+
+class HtmxPage(TemplateView):
+    template_name = 'htmx.html'
+
+    def post(self, request):
+        return HttpResponse('<h1>Hello</h1>')
+
+    def get(self):
+        pass
+
+    def pust(self):
+        pass
+
+
+class GoodsPage(TemplateView):
+    template_name = 'goods.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['goods'] = Goods.objects.all()
+        return context
+
+    def post(self, request):
+        data = request.POST
+        with open('/static/images/image.png', 'wb') as file:
+            file.write(data.FILES['image'].read())
+        path = Path('/static/images/image.png')
+        with path.open(mode='rb') as image:
+            file = File(image, name=image.name)
+        goods = Goods(name=data['name'], price=float(data['price']), image=file)
+        goods.save()
+        goods = Goods.objects.all()
+        html = render_to_string('goods_template.html', {'goods': goods})
+        return HttpResponse(html)

@@ -39,5 +39,12 @@ class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post = db.Column(db.Integer, db.ForeignKey('post.id'))
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class Goods(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    image = db.Column(db.String)
 # flask db migrate
 # flask db upgrade

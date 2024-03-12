@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="response">
+
+    </div>
+    <input name="text">
+    <button hx-put="/htmx_page" hx-include="[name='text'], []" hx-target="#response" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'></button>
+</body>
+</html>
+<!--Написати прототип інтернет-магазину, зробити таблюцю для товарів і можливість їх створення використовуючи htmx-->
